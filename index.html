@@ -1,0 +1,857 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ECECDC">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23351E1C'/%3E%3Ccircle cx='16' cy='8.5' r='3.2' fill='%23FF6037'/%3E%3Ccircle cx='16' cy='16' r='3.2' fill='%23733635'/%3E%3Ccircle cx='16' cy='23.5' r='3.2' fill='%23A0C9CB'/%3E%3C/svg%3E">
+<title>Рецепты Светофора</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Мягкий карточный интерфейс в палитре: Morning Snow / Amazon Mist / Aqua Mist / Toxic Orange / Black Kite / Garnet */
+:root{
+  --mist:#ECECDC; --snow:#F5F4ED; --card:#FBFAF5; --aqua:#A0C9CB; --aqua-l:#D3E5E4; --orange:#FF6037; --orange-l:#FFE1D6;
+  --kite:#351E1C; --garnet:#733635; --mute:#7C6B67; --line:#E2E0D0;
+  --shadow:0 1px 2px rgba(53,30,28,.04),0 6px 20px rgba(53,30,28,.05);
+  --r:22px; --r-s:14px; --font:'Manrope','Segoe UI',Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;-webkit-tap-highlight-color:transparent;background:var(--mist);color:var(--kite);font:15px/1.5 var(--font);-webkit-font-smoothing:antialiased}
+body.lock{overflow:hidden}
+.wrap{max-width:1260px;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:22px 64px}
+h1,h2,h3,h4{margin:0;line-height:1.2;text-wrap:balance}
+h1{font-size:22px;font-weight:800;letter-spacing:-.01em}
+h2{font-size:clamp(20px,2.2vw,26px);font-weight:800;letter-spacing:-.01em}
+h3{font-size:14px;font-weight:700;color:var(--mute)}
+h4{font-size:16px;font-weight:700;line-height:1.3}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.mute{color:var(--mute)}.sm{font-size:13px}.bad{color:var(--garnet)}
+.card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.empty{color:var(--mute);padding:28px;text-align:center}
+.empty.big{padding:56px 20px;display:grid;gap:10px;justify-items:center}
+.empty.big p{margin:0;font-weight:700;color:var(--kite);font-size:16px}
+.ic-big{width:44px;height:44px;color:var(--mute);stroke-width:1.4}
+
+/* шапка */
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{display:flex;flex-direction:column;gap:3px;background:var(--kite);border-radius:12px;padding:7px 10px;flex:none}
+.logo i{width:7px;height:7px;border-radius:50%;background:var(--garnet)}
+.logo i:nth-child(1){background:var(--orange)}.logo i:nth-child(3){background:var(--aqua)}
+.bk-btn{display:inline-flex;align-items:center;gap:10px;border:0;border-radius:999px;background:var(--card);box-shadow:var(--shadow);padding:10px 14px 10px 18px;font-weight:700;font-size:14px;cursor:pointer;flex:none}
+.bk-btn:hover{background:var(--snow)}
+.bk-n{min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:var(--mist);display:grid;place-items:center;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.bk-n:empty::before{content:"0"}
+.bk-btn.has .bk-n{background:var(--orange)}
+.bk-float{display:none}
+
+/* поиск */
+.searchbox{position:relative}
+.search{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:999px;padding:0 18px;color:var(--mute);box-shadow:var(--shadow)}
+.search.big{height:56px;font-size:15.5px}
+.search.big .ic{width:22px;height:22px}
+.search input{flex:1;min-width:0;border:0;background:transparent;font:inherit;color:var(--kite);padding:11px 0;outline:none}
+.search input::-webkit-search-cancel-button{display:none}
+.search:focus-within{box-shadow:0 0 0 2px var(--aqua),var(--shadow)}
+.qx{width:30px;height:30px;border-radius:50%;border:0;background:var(--mist);display:grid;place-items:center;cursor:pointer;color:var(--mute);flex:none}
+.qx .ic{width:15px;height:15px}
+.drop{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:12;background:var(--card);border-radius:var(--r);box-shadow:0 16px 40px rgba(53,30,28,.16);padding:8px;display:grid;gap:2px}
+.drop-i{display:flex;align-items:center;gap:10px;text-align:left;background:transparent;border:0;border-radius:var(--r-s);padding:10px 12px;cursor:pointer}
+.drop-i:hover,.drop-i.hl{background:var(--aqua-l)}
+.sku-t{display:grid;gap:1px;flex:1;min-width:0}
+.sku-n{font-size:14px;font-weight:600;line-height:1.35}
+.sku-m{font-size:12.5px;color:var(--mute)}
+.sku-c{min-width:30px;height:30px;border-radius:50%;background:var(--mist);display:grid;place-items:center;font-size:12.5px;font-weight:700;flex:none}
+
+/* полки товаров */
+.shelves{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin:22px 0 30px}
+.shelf{min-width:0}
+.shelf h3{margin:0 0 10px 4px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.pcard{display:flex;flex-direction:column;justify-content:space-between;gap:10px;text-align:left;border:0;border-radius:18px;background:var(--card);box-shadow:var(--shadow);padding:14px 16px;min-height:96px;cursor:pointer;transition:transform .15s,background .15s}
+.pcard:hover{transform:translateY(-2px)}
+.pcard.on{background:var(--aqua)}
+.pc-n{font-size:14px;font-weight:700;line-height:1.35}
+.pc-c{font-size:12.5px;font-weight:600;color:var(--mute)}
+.pcard.on .pc-c{color:rgba(53,30,28,.75)}
+
+/* рецепты */
+.recipes{scroll-margin-top:16px}
+.rhead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;background:var(--kite);color:var(--snow);border-radius:var(--r);padding:20px 24px}
+.rh-k{font-size:13px;font-weight:600;opacity:.7}
+.rhead h2{margin-top:4px}
+.rh-n{min-width:44px;height:44px;padding:0 10px;border-radius:999px;background:var(--orange);color:var(--kite);display:grid;place-items:center;font-size:18px;font-weight:800;flex:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.chip{background:var(--card);border:0;border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;color:var(--mute)}
+.chip:hover{color:var(--kite)}
+.chip.on{background:var(--kite);color:var(--snow)}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px;margin-top:14px;align-items:start}
+.chips + .rgrid{margin-top:0}
+.rc{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;min-width:0;border:2px solid transparent}
+.rc.saved{border-color:var(--orange)}
+.rc-top{display:flex;gap:12px;align-items:flex-start}
+.rc-ic{width:42px;height:42px;border-radius:50%;background:var(--mist);display:grid;place-items:center;flex:none}
+.rc-t{display:grid;gap:3px;min-width:0}
+.rc-m{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--mute);font-weight:600;flex-wrap:wrap}
+.rc-m .ic{width:14px;height:14px}
+.gchips{display:flex;flex-wrap:wrap;gap:6px}
+.g{background:var(--snow);border-radius:10px;padding:5px 10px;font-size:12.5px;color:var(--mute);font-weight:600}
+.g b{color:var(--kite);font-weight:700;white-space:nowrap}
+.g.hero{background:var(--aqua-l);color:var(--kite)}
+.rc-s{margin:0;font-size:13.5px;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rc-full{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:14px}
+.rc-full h4{font-size:14px}
+.ings{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.ings li{display:flex;justify-content:space-between;gap:12px;padding:8px 10px;border-radius:12px}
+.ings li:nth-child(odd){background:var(--snow)}
+.ings li.hero{background:var(--aqua-l)}
+.i-n{display:grid;font-size:14px;font-weight:600;min-width:0}
+.i-n small{font-size:12px;color:var(--mute);font-weight:500}
+.i-q{font-weight:700;font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:grid;gap:6px}
+.steps li{counter-increment:s;display:flex;gap:10px;background:var(--snow);border-radius:12px;padding:10px 12px;font-size:14px}
+.steps li::before{content:counter(s);width:22px;height:22px;border-radius:50%;background:var(--kite);color:var(--snow);display:grid;place-items:center;font-size:11.5px;font-weight:800;flex:none}
+.note{font-size:13px;color:var(--mute);margin:0}
+.rc-act{display:flex;gap:8px;margin-top:auto}
+.rbtn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;background:var(--mist);padding:11px 14px;font-size:13.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.rbtn .ic{width:18px;height:18px;stroke-width:2.2}
+.rbtn:hover{background:var(--line)}
+.rbtn.save{background:var(--kite);color:var(--snow)}
+.rbtn.save:hover{filter:brightness(1.25)}
+.rbtn.save.on{background:var(--orange);color:var(--kite)}
+
+/* окна */
+.back{position:fixed;inset:0;background:rgba(53,30,28,.3);z-index:20}
+.drawer{position:fixed;top:12px;right:12px;bottom:12px;width:min(480px,calc(100% - 24px));background:var(--snow);z-index:21;overflow-y:auto;border-radius:28px;box-shadow:0 20px 60px rgba(53,30,28,.25)}
+.drawer.center{top:50%;left:50%;right:auto;bottom:auto;transform:translate(-50%,-50%);width:min(560px,calc(100% - 24px));max-height:calc(100% - 48px)}
+.grab{display:none}
+.dr-head{position:sticky;top:0;background:var(--snow);display:flex;align-items:center;gap:12px;padding:18px 20px 12px;z-index:1}
+.dr-head h2{font-size:20px;flex:1}
+.dr-head .rh-n{min-width:34px;height:34px;font-size:15px}
+.iconbtn{width:40px;height:40px;border-radius:50%;border:0;background:var(--card);box-shadow:var(--shadow);display:grid;place-items:center;cursor:pointer;flex:none}
+.iconbtn.sm{width:34px;height:34px;box-shadow:none;background:var(--mist)}
+.iconbtn.sm .ic{width:16px;height:16px}
+.dr-body{padding:4px 20px 24px}
+.blist{display:grid;gap:8px}
+.bitem{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:12px;box-shadow:var(--shadow)}
+.bi-t{display:grid;gap:1px;flex:1;min-width:0}
+.bi-t b{font-size:14.5px}
+.bi-t>span:not(.rc-m){font-size:12.5px;color:var(--mute)}
+.bfoot{display:grid;gap:10px;justify-items:center;margin-top:16px;position:sticky;bottom:0;background:var(--snow);padding:12px 0 4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--mist);border:0;border-radius:999px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.btn .ic{width:18px;height:18px}
+.btn:hover{background:var(--line)}
+.btn.pri{background:var(--orange);color:var(--kite)}
+.btn.pri:hover{filter:brightness(.95);background:var(--orange)}
+.btn.wide{width:100%;padding:14px}
+.lnk{background:none;border:0;padding:4px;cursor:pointer;font-weight:600;font-size:13.5px;display:inline-flex;align-items:center;gap:6px}
+.lnk.mute{color:var(--mute)}
+.lnk .ic{width:16px;height:16px}
+.shop{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:6px;margin:10px 0 12px}
+.sh-r{display:flex;justify-content:space-between;gap:16px;padding:11px 12px;border-radius:12px}
+.sh-r:nth-child(odd){background:var(--snow)}
+.sh-n{font-size:14px;font-weight:600;min-width:0}
+.sh-q{font-size:14px;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sh-r.total{background:var(--kite)!important;color:var(--snow);margin-top:4px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--kite);color:var(--snow);padding:10px 18px;border-radius:999px;z-index:40;font-size:14px;font-weight:600;max-width:calc(100% - 32px)}
+.copybuf{position:fixed;left:16px;right:16px;bottom:96px;height:140px;z-index:39;border-radius:14px;font:13px var(--font)}
+
+@media (max-width:700px){
+  .wrap{padding-bottom:110px}
+  .top .bk-btn{display:none}
+  .bk-float{display:inline-flex;position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;background:var(--orange);color:var(--kite);padding:14px 16px 14px 18px;box-shadow:0 8px 24px rgba(255,96,55,.35)}
+  .bk-float .bk-n{background:var(--kite)!important;color:var(--snow)}
+  .search.big{height:52px;padding:0 16px}
+  .shelves{gap:14px;margin:18px 0 24px}
+  .pgrid{display:grid;grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:minmax(150px,44%);gap:8px;overflow-x:auto;scroll-snap-type:x proximity;margin-inline:-16px;padding:2px 16px 8px;scrollbar-width:none;overscroll-behavior-x:contain}
+  .pgrid::-webkit-scrollbar{display:none}
+  .pcard{padding:12px;min-height:92px;scroll-snap-align:start;scroll-margin-left:16px}
+  .pcard:hover{transform:none}
+  .toast{bottom:auto;top:calc(14px + env(safe-area-inset-top,0px))}
+  .recipes .chips{flex-wrap:nowrap;overflow-x:auto;margin-inline:-16px;padding:2px 16px;scrollbar-width:none}
+  .recipes .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none}
+  .rc{padding:16px}
+  .pc-n{font-size:13px}
+  .rgrid{grid-template-columns:minmax(0,1fr)}
+  .rhead{padding:18px}
+  .rbtn span{font-size:13px}
+  .drawer,.drawer.center{top:auto;left:0;right:0;bottom:0;transform:none;width:100%;max-height:92%;border-radius:28px 28px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .grab{display:block;width:40px;height:5px;border-radius:999px;background:var(--line);margin:10px auto 0}
+  .dr-head{padding-top:10px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span class="logo" aria-hidden="true"><i></i><i></i><i></i></span><h1>Рецепты Светофора</h1></div>
+    <button class="bk-btn" data-act="open-basket"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16l-1.5 9.2a2 2 0 0 1-2 1.8h-9a2 2 0 0 1-2-1.8z"/><path d="M8.5 9l3.5-5 3.5 5"/></svg><span class="bk-l">Корзина рецептов</span><b class="bk-n"></b></button>
+  </header>
+  <main id="main"></main>
+</div>
+<button class="bk-btn bk-float" data-act="open-basket" aria-label="Корзина рецептов"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16l-1.5 9.2a2 2 0 0 1-2 1.8h-9a2 2 0 0 1-2-1.8z"/><path d="M8.5 9l3.5-5 3.5 5"/></svg><b class="bk-n"></b></button>
+<div id="back" class="back" data-act="close" hidden></div>
+<aside id="drawer" class="drawer" hidden aria-label="Корзина"></aside>
+<div id="toast" class="toast" role="status" hidden></div>
+<textarea id="copybuf" class="copybuf" hidden aria-label="Текст для копирования"></textarea>
+<script>
+/* ===== ДАННЫЕ: справочник ингредиентов, ассортимент, каталог рецептов ===== */
+const CATALOG_V = '1.0 · 08.10.2026';
+
+/* Ингредиенты: кулинарные типы. syn — ключи для сопоставления названий при импорте */
+const ING = {
+  kolb_var:{n:'Колбаса докторская',g:'Колбасы',syn:['колбаса варен','докторск','колбаса вар','молочная колбас']},
+  vetch:{n:'Ветчина',g:'Колбасы',syn:['ветчин']},
+  kolb_pk:{n:'Колбаса полукопчёная',g:'Колбасы',syn:['п/к','полукопч','сервелат']},
+  sosiski:{n:'Сосиски',g:'Колбасы',syn:['сосиск','сардельк']},
+  tushenka:{n:'Тушёнка',g:'Консервы',syn:['тушен','говядина туш','свинина туш']},
+  pelm:{n:'Пельмени',g:'Заморозка',syn:['пельмен']},
+  tvorog:{n:'Творог',g:'Молочная продукция',syn:['творог']},
+  desert_tv:{n:'Творожный десерт',g:'Молочная продукция',syn:['десерт с творог','творожный десерт','творожн десерт']},
+  yog:{n:'Йогурт',g:'Молочная продукция',syn:['йогурт']},
+  moroz:{n:'Мороженое',g:'Заморозка',syn:['морожен','пломбир']},
+  moloko:{n:'Молоко',g:'Молочная продукция',syn:['молоко']},
+  kefir:{n:'Кефир',g:'Молочная продукция',syn:['кефир']},
+  ryazh:{n:'Ряженка',g:'Молочная продукция',syn:['ряженк']},
+  smetana:{n:'Сметана',g:'Молочная продукция',syn:['сметан']},
+  slivki:{n:'Сливки',g:'Молочная продукция',syn:['сливки ']},
+  maslo_sl:{n:'Масло сливочное',g:'Молочная продукция',syn:['масло сливоч','сливочное масло']},
+  syr_tv:{n:'Сыр твёрдый / полутвёрдый',g:'Сыры',syn:['сыр ','сырный продукт','российск','голландск','гауда','пошехон','маасдам','костромск']},
+  syr_pl_pasta:{n:'Плавленый сыр пастообразный',g:'Сыры',syn:['сыр плавл','плавленый сыр','ванночк','сырок плавл']},
+  syr_pl_lomt:{n:'Плавленый сыр ломтевой',g:'Сыры',syn:['ломтев','плавленый продукт']},
+  suluguni:{n:'Сулугуни',g:'Сыры',syn:['сулугун']},
+  brynza:{n:'Брынза',g:'Сыры',syn:['брынз']},
+  mozz:{n:'Моцарелла',g:'Сыры',syn:['моцарел']},
+  arahis:{n:'Арахис жареный солёный',g:'Снеки',syn:['арахис']},
+  polosatik:{n:'Полосатик солёно-сушёный',g:'Снеки',syn:['полосатик']},
+  solomka:{n:'Соломка минтая солёно-сушёная',g:'Снеки',syn:['соломка минта','минтая','минтай солен']},
+  kartofel:{n:'Картофель',g:'Овощи',syn:['картоф']},
+  morkov:{n:'Морковь',g:'Овощи',syn:['морков']},
+  luk:{n:'Лук репчатый',g:'Овощи',syn:['лук репч']},
+  luk_zel:{n:'Лук зелёный',g:'Овощи',syn:['лук зелен','зеленый лук']},
+  kapusta:{n:'Капуста белокочанная',g:'Овощи',syn:['капуст']},
+  svekla:{n:'Свёкла',g:'Овощи',syn:['свекл']},
+  ogurec:{n:'Огурцы свежие',g:'Овощи',syn:['огурцы свеж','огурец','огурцы']},
+  pomidor:{n:'Помидоры',g:'Овощи',syn:['помидор','томаты ']},
+  chesnok:{n:'Чеснок',g:'Овощи',syn:['чеснок']},
+  ukrop:{n:'Зелень (укроп, петрушка)',g:'Овощи',syn:['укроп','петрушк','зелень']},
+  perec_bolg:{n:'Перец сладкий',g:'Овощи',syn:['перец сладк','перец болгар']},
+  goroshek:{n:'Горошек зелёный',g:'Консервы',syn:['горошек']},
+  kukuruza:{n:'Кукуруза сахарная',g:'Консервы',syn:['кукуруз']},
+  fasol:{n:'Фасоль красная',g:'Консервы',syn:['фасол']},
+  ogur_sol:{n:'Огурцы солёные / маринованные',g:'Консервы',syn:['огурцы марин','огурцы солен','корнишон','огурцы консерв']},
+  sayra:{n:'Сайра консервированная',g:'Консервы',syn:['сайра']},
+  shproty:{n:'Шпроты',g:'Консервы',syn:['шпрот']},
+  kilka_tom:{n:'Килька в томатном соусе',g:'Консервы',syn:['килька','кильки']},
+  tomat_pasta:{n:'Томатная паста',g:'Консервы',syn:['томатная паст','паста томатн']},
+  yaica:{n:'Яйца куриные',g:'Бакалея',syn:['яйцо','яйца']},
+  baton:{n:'Батон / белый хлеб',g:'Бакалея',syn:['батон','хлеб белый','хлеб пшен']},
+  hleb_cher:{n:'Хлеб ржаной (бородинский)',g:'Бакалея',syn:['бородин','хлеб ржан','хлеб черн']},
+  lavash:{n:'Лаваш тонкий',g:'Бакалея',syn:['лаваш']},
+  maslo_rast:{n:'Масло подсолнечное',g:'Бакалея',syn:['масло подсолн','масло растит']},
+  muka:{n:'Мука пшеничная',g:'Бакалея',syn:['мука ']},
+  makarony:{n:'Макароны',g:'Бакалея',syn:['макарон','рожки','спагетти','перья']},
+  ris:{n:'Рис',g:'Бакалея',syn:['рис ']},
+  grechka:{n:'Гречка',g:'Бакалея',syn:['гречн','гречк']},
+  ovsyanka:{n:'Овсяные хлопья',g:'Бакалея',syn:['овсян','геркулес']},
+  pechenie:{n:'Печенье сахарное',g:'Бакалея',syn:['печенье']},
+  sahar:{n:'Сахар',g:'Бакалея',syn:['сахар']},
+  sol:{n:'Соль',g:'Бакалея',syn:['соль ']},
+  lavrovy:{n:'Лавровый лист',g:'Бакалея',syn:['лавров']},
+  soda:{n:'Сода пищевая',g:'Бакалея',syn:['сода ']},
+  mayonez:{n:'Майонез',g:'Бакалея',syn:['майонез']},
+  kvas:{n:'Квас хлебный',g:'Бакалея',syn:['квас']},
+  ketchup:{n:'Кетчуп',g:'Бакалея',syn:['кетчуп']},
+  voda:{n:'Вода',g:'—',base:true,syn:[]}
+};
+
+/* Ассортимент.
+   src: list — переданный список (no — номер строки, mk — отметка «моно/ассортимент»);
+        added — добавлено для демонстрации, требует сверки с магазином.
+   L: связи с ингредиентами [ингредиент, состояние, примечание]
+   состояния: auto — однозначно по названию; need — нужно решение редактора */
+const SKU0 = [
+ {id:'L01',no:1,n:'Йогурт Экомилк Соло 4,2% 130 г, стакан',b:'Экомилк',cat:'Молочная продукция',mk:'ассортимент',L:[['yog','auto']]},
+ {id:'L02',no:2,n:'Творог «Экомилк» натуральный рассыпчатый 5% 280 г',b:'Экомилк',cat:'Молочная продукция',mk:'моно',L:[['tvorog','auto']]},
+ {id:'L03',no:3,n:'Йогурт двухслойный в ассортименте «7 Утра» 350 г, стакан',b:'7 Утра',cat:'Молочная продукция',mk:'ассортимент',L:[['yog','auto']]},
+ {id:'L04',no:4,n:'Десерт с творогом и ЗМЖ в ассортименте «Буренкин Луг» 9% 350 г, стакан',b:'Буренкин Луг',cat:'Молочная продукция',mk:'ассортимент',L:[['desert_tv','auto']]},
+ {id:'L05',no:5,n:'Йогурт «Клубника» «Савушкин» 2% 120 г, п/ст',b:'Савушкин',cat:'Молочная продукция',mk:'ассортимент',L:[['yog','auto']]},
+ {id:'L06',no:6,n:'Мороженое молочное 6%, шоколадное, ГОСТ',b:'—',cat:'Заморозка',mk:'ассортимент',L:[['moroz','auto']]},
+ {id:'L07',no:7,n:'Колбаса Докторская «Мясник Лёня», вес.',b:'Мясник Лёня',cat:'Колбасные изделия',mk:'моно',L:[['kolb_var','auto']]},
+ {id:'L08',no:8,n:'Ветчина Рубленая кат. Б ТМ «Зареченские», вес.',b:'Зареченские',cat:'Колбасные изделия',mk:'моно',L:[['vetch','auto']]},
+ {id:'L09',no:9,n:'Колбаса Фирменная варёная из мяса кур «Мясная Губерния», вес. (ТД Черкизово)',b:'Мясная Губерния',cat:'Колбасные изделия',mk:'',L:[['kolb_var','need','Колбаса из мяса кур: проверить вкус и нарезку в рецептах с докторской']]},
+ {id:'L10',no:10,n:'Колбаса Рубленая п/к кат. Б 0,35 кг «Черкизово»',b:'Черкизово',cat:'Колбасные изделия',mk:'моно',L:[['kolb_pk','auto']]},
+ {id:'L11',no:11,n:'Пельмени Классические ТМ «Нужен ужин» 1 кг',b:'Нужен ужин',cat:'Заморозка',mk:'',L:[['pelm','auto']]},
+ {id:'L12',no:12,n:'Пельмени Мясо-картофельные ТМ «Домашняя кухня» 0,8 кг',b:'Домашняя кухня',cat:'Заморозка',mk:'',L:[['pelm','need','Начинка мясо-картофельная: проверить для жарки и запекания']]},
+ {id:'L13',no:13,n:'Арахис ядра жареные солёные «Натурвиль» 500 г',b:'Натурвиль',cat:'Снеки',mk:'',L:[['arahis','auto']]},
+ {id:'L14',no:14,n:'Жёлтый полосатик солёно-сушёный «Морячок Лёня» 100 г',b:'Морячок Лёня',cat:'Снеки',mk:'',L:[['polosatik','auto']]},
+ {id:'L15',no:15,n:'Соломка минтая солёно-сушёная «Морячок Лёня» 150 г',b:'Морячок Лёня',cat:'Снеки',mk:'',L:[['solomka','auto']]},
+ {id:'L16',no:16,n:'Сыр плавленый «Сливочный» в ассортименте Экомилк 45% 350 г, ванночка',b:'Экомилк',cat:'Сыры',mk:'',L:[['syr_pl_pasta','auto']]},
+ {id:'L17',no:17,n:'Плавленый продукт ломтевой шар «Российский» 45% 400 г «7 Утра»',b:'7 Утра',cat:'Сыры',mk:'',L:[['syr_pl_lomt','auto']]},
+ {id:'L18',no:18,n:'Сырный продукт «Витязь особый» 50% с ЗМЖ, вес. ТМ «Романовский маслосыродел»',b:'Романовский маслосыродел',cat:'Сыры',mk:'моно',L:[['syr_tv','need','Сырный продукт с ЗМЖ: плавление и вкус в горячих блюдах не подтверждены']]},
+ {id:'L19',no:null,n:'Колбаса варёная Классическая ТМ «Зареченский»',b:'Зареченский',cat:'Колбасные изделия',mk:'моно',L:[['kolb_var','auto']]},
+ {id:'L20',no:null,n:'Сосиски Сливочные «Зареченский»',b:'Зареченский',cat:'Колбасные изделия',mk:'моно',L:[['sosiski','auto']]},
+];
+
+/* Добавленный базовый ассортимент жёсткого дискаунтера (без брендов: конкретные марки уточняются по магазину) */
+const ADDED = [
+ ['Овощи',[['Картофель, вес.','kartofel'],['Морковь, вес.','morkov'],['Лук репчатый, вес.','luk'],['Капуста белокочанная, вес.','kapusta'],['Свёкла, вес.','svekla'],['Огурцы свежие, вес.','ogurec'],['Помидоры, вес.','pomidor'],['Чеснок, фас.','chesnok'],['Укроп свежий 50 г','ukrop'],['Лук зелёный 50 г','luk_zel'],['Перец сладкий, вес.','perec_bolg']]],
+ ['Консервы',[['Горошек зелёный 400 г, ж/б','goroshek'],['Кукуруза сахарная 340 г, ж/б','kukuruza'],['Фасоль красная в собственном соку 400 г, ж/б','fasol'],['Огурцы маринованные 680 г, ст/б','ogur_sol'],['Говядина тушёная ГОСТ 338 г, ж/б','tushenka'],['Сайра натуральная с добавлением масла 250 г, ж/б','sayra'],['Шпроты в масле 160 г, ж/б','shproty'],['Килька обжаренная в томатном соусе 240 г, ж/б','kilka_tom'],['Томатная паста 25% 270 г, ст/б','tomat_pasta']]],
+ ['Сыры',[['Сыр «Российский» 50%, вес.','syr_tv'],['Сыр «Голландский» 45%, вес.','syr_tv'],['Сыр «Пошехонский» 45%, вес.','syr_tv'],['Сыр «Гауда» 45%, вес.','syr_tv'],['Сыр «Моцарелла» для пиццы 40%, вес.','mozz'],['Сыр «Сулугуни» 45%, вес.','suluguni'],['Сыр «Брынза» 40%, вес.','brynza']]],
+ ['Молочная продукция',[['Молоко 2,5% 900 мл','moloko'],['Кефир 2,5% 900 г','kefir'],['Ряженка 4% 450 г','ryazh'],['Сметана 15% 300 г','smetana'],['Сметана 20% 300 г','smetana'],['Творог 9% 180 г','tvorog'],['Масло сливочное 72,5% 180 г','maslo_sl'],['Сливки 10% 200 мл','slivki']]],
+ ['Бакалея и хлеб',[['Яйцо куриное С1, 10 шт','yaica'],['Батон нарезной 400 г','baton'],['Хлеб «Бородинский» 400 г','hleb_cher'],['Лаваш тонкий армянский','lavash'],['Масло подсолнечное рафинированное 1 л','maslo_rast'],['Мука пшеничная в/с 2 кг','muka'],['Макароны «Рожки» 400 г','makarony'],['Рис круглозёрный 900 г','ris'],['Крупа гречневая 900 г','grechka'],['Хлопья овсяные 400 г','ovsyanka'],['Печенье сахарное 300 г','pechenie'],['Сахар 1 кг','sahar'],['Соль поваренная 1 кг','sol'],['Лавровый лист','lavrovy'],['Сода пищевая 500 г','soda'],['Майонез 50% 380 г','mayonez'],['Квас хлебный 1,5 л','kvas'],['Кетчуп томатный 300 г','ketchup']]]
+];
+(function(){let k=1;ADDED.forEach(([cat,items])=>items.forEach(([n,ing])=>{SKU0.push({id:'A'+String(k++).padStart(2,'0'),no:null,n,b:'—',cat,mk:'',src:'added',L:[[ing,'auto']]});}));
+ SKU0.forEach(s=>{if(!s.src)s.src='list';});})();
+
+/* Каталог рецептов. Все рецептуры — черновики до пробного приготовления.
+   Строка состава: i — ингредиент; q,u — количество; o — необязательный; h — роль, если продукт главный;
+   sg — значимость в роли главного (1–3); show — как показать в кадре; a — равноценные ингредиенты;
+   ca — допустимые, но требующие проверки; s — замены (вариант рецепта меняется); p — подготовка. */
+const Ln=(i,q,u,x)=>Object.assign({i,q,u},x||{});
+const RECIPES = [
+ {id:'olivie',v:1,n:'Оливье с колбасой',t:'Салат',p:6,ta:40,tt:120,d:2,f:3,sh:2,eq:['кастрюля','доска и нож','миска'],
+  L:[Ln('kolb_var',300,'г',{h:'Значимый компонент салата',sg:2,a:['vetch'],show:'Упаковка, нарезка кубиком, добавление в миску',p:'кубик'}),Ln('kartofel',400,'г',{p:'отварить в мундире'}),Ln('morkov',150,'г',{p:'отварить'}),Ln('yaica',4,'шт',{p:'сварить вкрутую'}),Ln('goroshek',1,'банка',{p:'слить жидкость'}),Ln('ogur_sol',200,'г',{s:['ogurec'],p:'кубик'}),Ln('mayonez',200,'г'),Ln('sol',null,'по вкусу',{o:1}),Ln('ukrop',10,'г',{o:1})],
+  S:['Отварить картофель и морковь в мундире до мягкости, остудить.','Сварить яйца вкрутую 10 минут, охладить в холодной воде.','Нарезать кубиком овощи, яйца, огурцы и колбасу.','Добавить горошек без жидкости, заправить майонезом, посолить.'],
+  note:'Варка и охлаждение — заранее; в кадре нарезка и сборка.'},
+ {id:'okroshka_kvas',v:1,n:'Окрошка на квасе с колбасой',t:'Суп',p:4,ta:25,tt:90,d:1,f:3,sh:2,eq:['кастрюля','доска и нож','супница'],
+  L:[Ln('kolb_var',300,'г',{h:'Основной белковый компонент',sg:2,a:['vetch'],show:'Нарезка кубиком крупным планом, добавление в кастрюлю'}),Ln('kartofel',300,'г',{p:'отварить'}),Ln('yaica',4,'шт',{p:'вкрутую'}),Ln('ogurec',300,'г'),Ln('luk_zel',50,'г'),Ln('ukrop',30,'г'),Ln('kvas',1.5,'л'),Ln('smetana',150,'г',{o:1}),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Отварить картофель, сварить яйца, остудить.','Нарезать кубиком колбасу, картофель, яйца, огурцы.','Мелко порубить зелёный лук и укроп, слегка помять с солью.','Соединить, залить охлаждённым квасом, подать со сметаной.'],
+  note:'Сезонное блюдо: редактор учитывает время выхода ролика. Основа — квас.'},
+ {id:'okroshka_kefir',v:1,n:'Окрошка на кефире с колбасой',t:'Суп',p:4,ta:25,tt:90,d:1,f:3,sh:2,eq:['кастрюля','доска и нож','супница'],
+  L:[Ln('kolb_var',300,'г',{h:'Основной белковый компонент',sg:2,a:['vetch'],show:'Нарезка кубиком, сборка в тарелке'}),Ln('kartofel',300,'г',{p:'отварить'}),Ln('yaica',4,'шт',{p:'вкрутую'}),Ln('ogurec',300,'г'),Ln('ukrop',30,'г'),Ln('kefir',1,'л',{a:['ryazh']}),Ln('voda',0.5,'л',{p:'холодная'}),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Отварить картофель, сварить яйца, остудить.','Нарезать колбасу, картофель, яйца, огурцы.','Развести кефир холодной водой, посолить.','Залить нарезку, посыпать укропом.'],
+  note:'Отдельная версия на кефире. Сезонность — на усмотрение редактора.'},
+ {id:'hot_sandwich',v:1,n:'Горячий бутерброд с колбасой и сыром',t:'Закуска',p:4,ta:10,tt:20,d:1,f:3,sh:3,eq:['духовка','противень'],
+  L:[Ln('kolb_var',200,'г',{h:'Основа начинки',sg:3,a:['vetch','kolb_pk'],show:'Ломтики на хлебе крупным планом'}),Ln('baton',8,'ломт.'),Ln('syr_tv',150,'г',{h:'Расплавленная сырная шапка',sg:2,a:['mozz'],ca:['syr_pl_lomt'],show:'Сыр тянется при разломе'}),Ln('pomidor',1,'шт',{o:1}),Ln('ketchup',30,'г',{o:1})],
+  S:['Нарезать батон и колбасу ломтиками, сыр натереть.','Выложить колбасу на хлеб, сверху ломтик помидора по желанию.','Посыпать сыром.','Запекать 7–10 минут при 200 °C до расплавления сыра.'],
+  note:'Для сырного продукта и ломтевого плавленого — проверить плавление на пробной готовке.'},
+ {id:'yaichnica',v:1,n:'Яичница с колбасой',t:'Завтрак',p:2,ta:10,tt:10,d:1,f:3,sh:3,eq:['сковорода'],
+  L:[Ln('kolb_var',150,'г',{h:'Обжаривается кусочками до румянца',sg:3,a:['vetch','sosiski','kolb_pk'],show:'Шипящие кусочки на сковороде, затем яйца'}),Ln('yaica',4,'шт'),Ln('maslo_rast',15,'мл',{s:['maslo_sl']}),Ln('sol',null,'по вкусу',{o:1}),Ln('luk_zel',10,'г',{o:1})],
+  S:['Нарезать колбасу кружками или кубиком.','Обжарить на масле 2–3 минуты до румянца.','Разбить яйца, посолить, жарить до готовности белка.','Посыпать зелёным луком.'],
+  note:'Короткий ролик в одну сковороду.'},
+ {id:'makarony_kolb',v:1,n:'Макароны с колбасой и сыром',t:'Горячее',p:3,ta:15,tt:20,d:1,f:3,sh:2,eq:['кастрюля','сковорода'],
+  L:[Ln('makarony',300,'г'),Ln('kolb_pk',200,'г',{h:'Обжаривается с луком, задаёт вкус',sg:3,a:['kolb_var','sosiski','vetch'],show:'Обжарка соломкой с луком'}),Ln('luk',1,'шт'),Ln('syr_tv',100,'г',{h:'Тянущийся сыр сверху',sg:2,ca:['syr_pl_lomt']}),Ln('maslo_rast',20,'мл'),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Отварить макароны в подсоленной воде.','Обжарить лук и колбасу соломкой 5 минут.','Смешать с макаронами, прогреть.','Посыпать тёртым сыром, накрыть на минуту.'],note:''},
+ {id:'salat_vetch',v:1,n:'Салат с ветчиной, сыром и огурцом',t:'Салат',p:4,ta:15,tt:25,d:1,f:2,sh:2,eq:['кастрюля','миска'],
+  L:[Ln('vetch',200,'г',{h:'Основной компонент',sg:3,a:['kolb_var'],show:'Нарезка соломкой, упаковка в кадре'}),Ln('syr_tv',150,'г',{h:'Тёртый сыр в салате',sg:2}),Ln('ogurec',2,'шт'),Ln('yaica',3,'шт',{p:'вкрутую'}),Ln('kukuruza',1,'банка',{o:1}),Ln('mayonez',100,'г'),Ln('chesnok',1,'зуб.',{o:1})],
+  S:['Сварить яйца вкрутую, остудить.','Нарезать соломкой ветчину, огурцы, яйца; сыр натереть.','Добавить кукурузу по желанию.','Заправить майонезом с чесноком.'],note:''},
+ {id:'omlet',v:1,n:'Омлет с ветчиной',t:'Завтрак',p:2,ta:10,tt:15,d:1,f:3,sh:3,eq:['сковорода с крышкой','миска'],
+  L:[Ln('yaica',4,'шт'),Ln('moloko',80,'мл'),Ln('vetch',100,'г',{h:'Кусочки в пышном омлете',sg:2,a:['kolb_var','sosiski']}),Ln('maslo_sl',15,'г',{s:['maslo_rast']}),Ln('sol',null,'по вкусу',{o:1}),Ln('ukrop',10,'г',{o:1})],
+  S:['Взбить яйца с молоком и солью.','Обжарить кубики ветчины на масле 1–2 минуты.','Залить яичной смесью, накрыть крышкой.','Готовить 6–7 минут на слабом огне, посыпать зеленью.'],note:''},
+ {id:'rulet_lavash',v:1,n:'Рулет из лаваша с ветчиной и сыром',t:'Закуска',p:4,ta:15,tt:45,d:1,f:2,sh:3,eq:['пищевая плёнка','доска и нож'],
+  L:[Ln('lavash',1,'шт'),Ln('vetch',200,'г',{h:'Основная начинка',sg:3,a:['kolb_var'],show:'Спиральный срез рулета'}),Ln('syr_pl_pasta',150,'г',{h:'Сырный слой-намазка',sg:2}),Ln('ogurec',1,'шт'),Ln('ukrop',20,'г',{o:1})],
+  S:['Смазать лаваш плавленым сыром.','Выложить ломтики ветчины, тонкие пластины огурца, зелень.','Плотно свернуть, обернуть плёнкой, охладить 30 минут.','Нарезать наискосок.'],note:'Срез рулета — главный кадр.'},
+ {id:'solyanka',v:1,n:'Солянка сборная мясная',t:'Суп',p:6,ta:30,tt:60,d:2,f:3,sh:2,eq:['кастрюля','сковорода'],
+  L:[Ln('kolb_pk',150,'г',{h:'Копчёная нота бульона',sg:2,show:'Нарезка соломкой, мясное ассорти на доске'}),Ln('sosiski',200,'г',{h:'Часть мясного ассорти',sg:2}),Ln('kolb_var',150,'г',{h:'Часть мясного ассорти',sg:2,a:['vetch']}),Ln('kartofel',300,'г',{o:1}),Ln('luk',1,'шт'),Ln('ogur_sol',200,'г'),Ln('tomat_pasta',50,'г'),Ln('maslo_rast',20,'мл'),Ln('lavrovy',2,'шт',{o:1}),Ln('smetana',100,'г',{o:1}),Ln('voda',2,'л')],
+  S:['Обжарить лук, добавить томатную пасту, прогреть 2 минуты.','Нарезать соломкой колбасы, сосиски и огурцы.','Сварить картофель кубиком 10 минут (по желанию).','Добавить мясное ассорти, огурцы, зажарку, лавровый лист; варить 10–15 минут.','Подавать со сметаной.'],
+  note:'Требует нескольких колбасных SKU — хорошо показывает линейку.'},
+ {id:'pizza_baton',v:1,n:'Пицца на батоне',t:'Закуска',p:4,ta:10,tt:20,d:1,f:2,sh:3,eq:['духовка','противень'],
+  L:[Ln('baton',1,'шт',{p:'разрезать вдоль'}),Ln('kolb_pk',150,'г',{h:'Основа начинки',sg:3,a:['kolb_var','sosiski','vetch'],show:'Раскладка кружков колбасы'}),Ln('syr_tv',150,'г',{h:'Сырная шапка',sg:2,a:['mozz'],ca:['syr_pl_lomt']}),Ln('pomidor',2,'шт'),Ln('ketchup',50,'г',{s:['tomat_pasta']}),Ln('mayonez',30,'г',{o:1})],
+  S:['Разрезать батон вдоль на половинки.','Смазать кетчупом, выложить колбасу и помидоры.','Посыпать сыром.','Запекать 10 минут при 200 °C.'],note:''},
+ {id:'lavash_sosiski',v:1,n:'Сосиски в лаваше с сыром',t:'Закуска',p:4,ta:10,tt:15,d:1,f:2,sh:3,eq:['сковорода'],
+  L:[Ln('sosiski',4,'шт',{h:'Начинка, видна на срезе',sg:3,show:'Заворачивание сосиски в лаваш'}),Ln('lavash',1,'шт',{p:'разрезать на 4 части'}),Ln('syr_tv',100,'г',{h:'Тянущийся сыр внутри',sg:1,ca:['syr_pl_lomt']}),Ln('ketchup',30,'г',{o:1}),Ln('maslo_rast',15,'мл')],
+  S:['Разрезать лаваш на 4 прямоугольника.','Смазать кетчупом, посыпать сыром, положить сосиску.','Плотно свернуть.','Обжарить швом вниз по 2 минуты с каждой стороны.'],note:''},
+ {id:'pure_sosiski',v:1,n:'Картофельное пюре с сосисками',t:'Горячее',p:4,ta:20,tt:35,d:1,f:3,sh:2,eq:['кастрюля','толкушка','сковорода'],
+  L:[Ln('sosiski',6,'шт',{h:'Обжаренные сосиски на тарелке',sg:3,show:'Обжаривание с надрезами'}),Ln('kartofel',800,'г'),Ln('moloko',150,'мл'),Ln('maslo_sl',40,'г'),Ln('ogur_sol',2,'шт',{o:1}),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Отварить картофель в подсоленной воде 20 минут.','Размять с горячим молоком и маслом.','Сделать на сосисках надрезы, обжарить 3–4 минуты.','Подать с пюре и огурцом.'],note:''},
+ {id:'pelm_zapech',v:1,n:'Пельмени, запечённые в сметане с сыром',t:'Горячее',p:4,ta:10,tt:45,d:1,f:2,sh:3,eq:['духовка','форма для запекания'],
+  L:[Ln('pelm',800,'г',{h:'Основа блюда',sg:3,show:'Выкладка в форму, румяная корочка'}),Ln('smetana',300,'г',{s:['slivki']}),Ln('syr_tv',150,'г',{h:'Сырная корочка',sg:1,ca:['syr_pl_lomt']}),Ln('luk',1,'шт',{o:1}),Ln('chesnok',2,'зуб.',{o:1}),Ln('voda',0.1,'л'),Ln('sol',null,'по вкусу',{o:1})],
+  S:['По желанию слегка обжарить лук.','Выложить замороженные пельмени в форму, сверху лук.','Смешать сметану с водой и чесноком, залить пельмени.','Посыпать сыром, запекать 35–40 минут при 190 °C.'],note:''},
+ {id:'pelm_fried',v:1,n:'Жареные пельмени',t:'Горячее',p:3,ta:15,tt:25,d:1,f:3,sh:3,eq:['сковорода с крышкой'],
+  L:[Ln('pelm',600,'г',{h:'Основа блюда',sg:3,show:'Румяная корочка на сковороде'}),Ln('maslo_rast',30,'мл'),Ln('voda',0.1,'л'),Ln('smetana',100,'г',{o:1}),Ln('ukrop',10,'г',{o:1})],
+  S:['Разогреть масло, выложить замороженные пельмени в один слой.','Обжарить 5 минут до корочки.','Влить воду, накрыть, тушить 7–8 минут.','Снять крышку, дожарить до хруста.'],note:''},
+ {id:'sup_pelm',v:1,n:'Суп с пельменями',t:'Суп',p:4,ta:15,tt:30,d:1,f:2,sh:2,eq:['кастрюля'],
+  L:[Ln('pelm',400,'г',{h:'Основа супа',sg:3}),Ln('kartofel',200,'г',{o:1}),Ln('morkov',1,'шт'),Ln('luk',1,'шт'),Ln('lavrovy',2,'шт',{o:1}),Ln('ukrop',10,'г',{o:1}),Ln('voda',2,'л'),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Довести воду до кипения, добавить картофель, морковь и лук.','Варить 10 минут.','Добавить пельмени, варить до всплытия и ещё 5 минут.','Посолить, добавить лавровый лист и зелень.'],note:''},
+ {id:'syrniki',v:1,n:'Сырники',t:'Завтрак',p:3,ta:25,tt:30,d:2,f:3,sh:3,eq:['сковорода','миска'],
+  L:[Ln('tvorog',500,'г',{h:'Основа теста',sg:3,show:'Творог из упаковки в миску, формовка'}),Ln('yaica',1,'шт'),Ln('muka',60,'г'),Ln('sahar',40,'г'),Ln('maslo_rast',30,'мл'),Ln('smetana',100,'г',{o:1}),Ln('sol',null,'щепотка',{o:1})],
+  S:['Размять творог, добавить яйцо, сахар, щепотку соли.','Всыпать муку, замесить мягкое тесто.','Сформовать сырники, обвалять в муке.','Обжарить по 3–4 минуты с каждой стороны, подать со сметаной.'],
+  note:'Влажность творога разная: на пробной готовке проверить количество муки.'},
+ {id:'zapekanka',v:1,n:'Творожная запеканка',t:'Завтрак',p:6,ta:15,tt:60,d:1,f:3,sh:2,eq:['духовка','форма для запекания','миска'],
+  L:[Ln('tvorog',500,'г',{h:'Основа запеканки',sg:3,show:'Разрез готовой запеканки'}),Ln('yaica',2,'шт'),Ln('sahar',70,'г'),Ln('muka',40,'г'),Ln('smetana',100,'г'),Ln('maslo_sl',15,'г',{p:'смазать форму'})],
+  S:['Смешать творог, яйца, сахар и сметану.','Добавить муку, перемешать.','Выложить в смазанную форму.','Запекать 40 минут при 180 °C.'],note:''},
+ {id:'lenivye',v:1,n:'Ленивые вареники',t:'Завтрак',p:3,ta:25,tt:35,d:2,f:3,sh:2,eq:['кастрюля','доска'],
+  L:[Ln('tvorog',400,'г',{h:'Основа теста',sg:3}),Ln('yaica',1,'шт'),Ln('muka',120,'г'),Ln('sahar',30,'г'),Ln('maslo_sl',30,'г'),Ln('smetana',100,'г',{o:1}),Ln('sol',null,'щепотка',{o:1})],
+  S:['Смешать творог, яйцо, сахар и соль.','Добавить муку, раскатать колбаску, нарезать кусочками.','Варить в кипящей воде 3–4 минуты после всплытия.','Подать с маслом и сметаной.'],note:''},
+ {id:'namazka',v:1,n:'Творожная намазка с чесноком и зеленью',t:'Закуска',p:4,ta:10,tt:10,d:1,f:2,sh:2,eq:['миска'],
+  L:[Ln('tvorog',250,'г',{h:'Основа намазки',sg:3}),Ln('smetana',50,'г'),Ln('chesnok',2,'зуб.'),Ln('ukrop',20,'г'),Ln('hleb_cher',6,'ломт.',{a:['baton']}),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Размять творог со сметаной.','Добавить чеснок и мелко рубленую зелень, посолить.','Намазать на ломтики хлеба.'],note:''},
+ {id:'bliny_tvorog',v:1,n:'Блины с творогом',t:'Завтрак',p:4,ta:45,tt:60,d:2,f:3,sh:3,eq:['сковорода','миска'],
+  L:[Ln('moloko',500,'мл'),Ln('yaica',2,'шт'),Ln('muka',200,'г'),Ln('sahar',30,'г'),Ln('maslo_rast',30,'мл'),Ln('tvorog',400,'г',{h:'Начинка',sg:2,a:['desert_tv'],show:'Начинка на блине, сворачивание конвертом'}),Ln('smetana',100,'г',{o:1}),Ln('sol',null,'щепотка',{o:1})],
+  S:['Смешать молоко, яйца, сахар, соль; всыпать муку, добавить масло.','Испечь тонкие блины.','Положить творожную начинку, свернуть конвертом.','Подать со сметаной.'],note:'Выпекание блинов занимает время — часть снять ускоренно.'},
+ {id:'bliny_moroz',v:1,n:'Блины с шоколадным мороженым',t:'Десерт',p:4,ta:40,tt:50,d:2,f:2,sh:3,eq:['сковорода','миска'],
+  L:[Ln('moloko',500,'мл'),Ln('yaica',2,'шт'),Ln('muka',200,'г'),Ln('sahar',30,'г'),Ln('maslo_rast',30,'мл'),Ln('moroz',250,'г',{h:'Шарик на горячем блине',sg:2,show:'Тающий шарик крупным планом'}),Ln('sol',null,'щепотка',{o:1})],
+  S:['Замесить жидкое тесто для блинов.','Испечь блины, сложить треугольником.','Выложить шарик мороженого на тёплый блин.'],note:'Мороженое тает быстро: снимать сразу после выкладки.'},
+ {id:'koktejl',v:1,n:'Молочный коктейль',t:'Напиток',p:2,ta:5,tt:5,d:1,f:3,sh:3,eq:['блендер','высокий стакан'],
+  L:[Ln('moloko',400,'мл'),Ln('moroz',200,'г',{h:'Основа вкуса и пенки',sg:3,show:'Мороженое в чаше блендера, пена в стакане'}),Ln('pechenie',2,'шт',{o:1,p:'крошка сверху'})],
+  S:['Охладить молоко.','Взбить молоко с мороженым в блендере 1 минуту.','Перелить в стакан, посыпать крошкой печенья.'],note:''},
+ {id:'parfe',v:1,n:'Десерт в стакане с йогуртом и печеньем',t:'Десерт',p:2,ta:10,tt:10,d:1,f:2,sh:3,eq:['прозрачный стакан'],
+  L:[Ln('yog',260,'г',{h:'Основные слои десерта',sg:3,a:['desert_tv'],show:'Слои в прозрачном стакане'}),Ln('pechenie',100,'г',{p:'раскрошить'}),Ln('ovsyanka',30,'г',{o:1})],
+  S:['Раскрошить печенье.','Выкладывать слоями в стакан: печенье, йогурт, снова печенье.','Дать постоять 5 минут.'],note:'Для двухслойного йогурта показать слои упаковки и стакана.'},
+ {id:'ovsyanka_ban',v:1,n:'Ленивая овсянка в банке',t:'Завтрак',p:1,ta:5,tt:480,d:1,f:2,sh:2,eq:['банка с крышкой','холодильник'],
+  L:[Ln('ovsyanka',50,'г'),Ln('moloko',100,'мл',{s:['kefir']}),Ln('yog',120,'г',{h:'Сливочная основа и вкус',sg:3,a:['desert_tv']}),Ln('sahar',null,'по вкусу',{o:1})],
+  S:['Смешать хлопья, молоко и йогурт в банке.','Закрыть и убрать в холодильник на ночь.','Утром перемешать.'],note:'Время ожидания показать склейкой «вечер — утро».'},
+ {id:'oladyi',v:1,n:'Оладьи на кефире с йогуртом',t:'Завтрак',p:3,ta:25,tt:35,d:2,f:3,sh:3,eq:['сковорода','миска'],
+  L:[Ln('kefir',500,'мл',{h:'Основа теста',sg:3,a:['ryazh'],show:'Кефир в тесто, пышные оладьи'}),Ln('yaica',1,'шт'),Ln('muka',250,'г'),Ln('sahar',30,'г'),Ln('soda',0.5,'ч. л.'),Ln('maslo_rast',40,'мл'),Ln('yog',200,'г',{h:'Подача сверху',sg:1}),Ln('sol',null,'щепотка',{o:1})],
+  S:['Смешать тёплый кефир с яйцом, сахаром, солью и содой.','Всыпать муку до густоты сметаны.','Жарить оладьи на масле по 2 минуты с каждой стороны.','Подать, полив йогуртом.'],note:''},
+ {id:'morkov_arahis',v:1,n:'Морковный салат с чесноком и арахисом',t:'Салат',p:4,ta:15,tt:15,d:1,f:2,sh:2,eq:['тёрка','миска'],
+  L:[Ln('morkov',400,'г'),Ln('arahis',70,'г',{h:'Хрустящий акцент, посыпка',sg:2,show:'Крупный план посыпки'}),Ln('chesnok',2,'зуб.'),Ln('mayonez',80,'г',{s:['smetana']}),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Натереть морковь.','Добавить чеснок и майонез, перемешать.','Посыпать арахисом перед подачей.'],note:'Арахис солёный — салат почти не солить.'},
+ {id:'kapusta_arahis',v:1,n:'Салат из капусты с кукурузой и арахисом',t:'Салат',p:4,ta:15,tt:15,d:1,f:2,sh:2,eq:['доска и нож','миска'],
+  L:[Ln('kapusta',400,'г'),Ln('kukuruza',1,'банка'),Ln('arahis',70,'г',{h:'Хрустящий акцент',sg:2}),Ln('ogurec',1,'шт',{o:1}),Ln('maslo_rast',30,'мл',{s:['mayonez']}),Ln('ukrop',10,'г',{o:1})],
+  S:['Тонко нашинковать капусту, слегка помять.','Добавить кукурузу и огурец.','Заправить маслом.','Посыпать арахисом.'],note:''},
+ {id:'kapusta_ryba',v:1,n:'Салат из капусты с сушёной рыбой',t:'Салат',p:4,ta:15,tt:30,d:1,f:1,sh:2,eq:['кастрюля','миска'],
+  L:[Ln('kapusta',400,'г'),Ln('polosatik',100,'г',{h:'Солёный рыбный вкус, волокна в салате',sg:3,a:['solomka'],show:'Разбор рыбы на волокна'}),Ln('kukuruza',1,'банка'),Ln('yaica',2,'шт',{p:'вкрутую'}),Ln('mayonez',80,'г'),Ln('ukrop',10,'г',{o:1})],
+  S:['Нашинковать капусту.','Разобрать рыбу на тонкие волокна.','Добавить кукурузу и рубленые яйца.','Заправить майонезом, не солить.'],
+  note:'Знакомость низкая: вариация на салат с сушёным кальмаром. Обязательна пробная готовка.'},
+ {id:'salat_solomka',v:1,n:'Салат с соломкой минтая, сыром и кукурузой',t:'Салат',p:4,ta:15,tt:25,d:1,f:1,sh:2,eq:['кастрюля','миска'],
+  L:[Ln('solomka',75,'г',{h:'Рыбная соломка в салате',sg:3,a:['polosatik']}),Ln('syr_tv',100,'г'),Ln('kukuruza',1,'банка'),Ln('yaica',3,'шт',{p:'вкрутую'}),Ln('chesnok',1,'зуб.',{o:1}),Ln('mayonez',80,'г')],
+  S:['Сварить яйца, нарезать.','Сыр натереть, соломку нарезать короче.','Смешать с кукурузой.','Заправить майонезом с чесноком.'],note:'Знакомость низкая, требует пробной готовки.'},
+ {id:'grenki',v:1,n:'Чесночные гренки с закусочной тарелкой',t:'Закуска',p:4,ta:15,tt:20,d:1,f:2,sh:3,eq:['сковорода','доска'],
+  L:[Ln('hleb_cher',6,'ломт.',{p:'брусочками'}),Ln('chesnok',3,'зуб.'),Ln('maslo_rast',40,'мл'),Ln('polosatik',100,'г',{h:'Центр закусочной тарелки',sg:2,a:['solomka','arahis'],show:'Сборка тарелки'}),Ln('syr_tv',100,'г',{o:1}),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Нарезать хлеб брусочками.','Обжарить на масле до хруста.','Натереть горячие гренки чесноком, посолить.','Собрать тарелку с рыбой и сыром.'],note:'Без алкогольного контекста в кадре.'},
+ {id:'syrny_sup',v:1,n:'Сырный суп с плавленым сыром',t:'Суп',p:4,ta:20,tt:35,d:1,f:3,sh:3,eq:['кастрюля','сковорода'],
+  L:[Ln('syr_pl_pasta',350,'г',{h:'Растворяется в бульоне, даёт вкус и цвет',sg:3,ca:['syr_pl_lomt'],show:'Сыр из ванночки в кастрюлю, сливочный цвет'}),Ln('kartofel',400,'г'),Ln('morkov',1,'шт'),Ln('luk',1,'шт'),Ln('maslo_rast',20,'мл'),Ln('sosiski',150,'г',{o:1,a:['kolb_pk']}),Ln('ukrop',10,'г',{o:1}),Ln('voda',1.5,'л'),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Отварить картофель кубиком 10 минут.','Обжарить лук и морковь, добавить в суп.','Добавить плавленый сыр, помешивать до растворения.','По желанию добавить обжаренные сосиски, посыпать зеленью.'],
+  note:'Ломтевой плавленый продукт: проверить, как растворяется.'},
+ {id:'evreysky',v:1,n:'Салат «Еврейский» из моркови с сыром и чесноком',t:'Салат',p:4,ta:15,tt:15,d:1,f:2,sh:2,eq:['тёрка','миска'],
+  L:[Ln('syr_pl_lomt',200,'г',{h:'Тёртый сыр — основа салата',sg:3,a:['syr_tv'],show:'Натирание сыра'}),Ln('morkov',2,'шт'),Ln('chesnok',2,'зуб.'),Ln('mayonez',80,'г')],
+  S:['Охладить сыр, натереть.','Натереть морковь и чеснок.','Заправить майонезом.'],note:''},
+ {id:'buter_plavl',v:1,n:'Бутерброды с плавленым сыром, яйцом и чесноком',t:'Закуска',p:4,ta:10,tt:20,d:1,f:2,sh:2,eq:['кастрюля','миска'],
+  L:[Ln('syr_pl_pasta',150,'г',{h:'Основа намазки',sg:3,show:'Намазка из ванночки на хлеб'}),Ln('yaica',2,'шт',{p:'вкрутую'}),Ln('chesnok',1,'зуб.'),Ln('baton',8,'ломт.',{a:['hleb_cher']}),Ln('ukrop',10,'г',{o:1})],
+  S:['Сварить и натереть яйца.','Смешать с плавленым сыром и чесноком.','Намазать на хлеб, посыпать зеленью.'],note:''},
+ {id:'lavash_syr',v:1,n:'Лаваш с сыром и зеленью на сковороде',t:'Закуска',p:2,ta:10,tt:15,d:1,f:2,sh:3,eq:['сковорода'],
+  L:[Ln('lavash',1,'шт'),Ln('suluguni',200,'г',{h:'Тянущийся сыр',sg:3,a:['syr_tv','mozz'],ca:['brynza'],show:'Тянущийся сыр при разрезе'}),Ln('ukrop',20,'г'),Ln('yaica',1,'шт'),Ln('maslo_sl',15,'г',{s:['maslo_rast']})],
+  S:['Смешать тёртый сыр, яйцо и зелень.','Выложить начинку на лаваш, сложить конвертом.','Обжарить на масле по 2–3 минуты с каждой стороны.'],note:''},
+ {id:'salat_brynza',v:1,n:'Салат из огурцов и помидоров с брынзой',t:'Салат',p:4,ta:10,tt:10,d:1,f:2,sh:3,eq:['доска и нож','миска'],
+  L:[Ln('brynza',150,'г',{h:'Кубики сыра сверху',sg:2,show:'Кубики брынзы на овощах'}),Ln('ogurec',2,'шт'),Ln('pomidor',3,'шт'),Ln('perec_bolg',1,'шт',{o:1}),Ln('luk',0.5,'шт',{o:1}),Ln('maslo_rast',30,'мл')],
+  S:['Нарезать овощи крупно.','Заправить маслом.','Выложить сверху кубики брынзы.'],note:''},
+ {id:'vinegret',v:1,n:'Винегрет',t:'Салат',p:6,ta:30,tt:90,d:2,f:3,sh:2,eq:['кастрюля','миска'],
+  L:[Ln('svekla',2,'шт',{h:'Цвет и вкус салата',sg:3,show:'Нарезка свёклы, цвет салата'}),Ln('kartofel',3,'шт'),Ln('morkov',2,'шт'),Ln('ogur_sol',3,'шт',{h:'Кислинка салата',sg:2}),Ln('goroshek',1,'банка',{o:1,h:'Дополнение салата',sg:1}),Ln('maslo_rast',40,'мл'),Ln('luk',1,'шт',{o:1}),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Отварить свёклу, картофель и морковь, остудить.','Нарезать кубиком овощи и огурцы.','Смешать сначала свёклу с маслом, затем остальное.','Посолить, добавить горошек по желанию.'],note:''},
+ {id:'mimoza',v:1,n:'Салат «Мимоза» с сайрой',t:'Салат',p:6,ta:30,tt:120,d:2,f:3,sh:2,eq:['кастрюля','форма или блюдо'],
+  L:[Ln('sayra',1,'банка',{h:'Рыбный слой салата',sg:3,show:'Разминание рыбы вилкой, слои'}),Ln('kartofel',3,'шт'),Ln('morkov',2,'шт'),Ln('yaica',4,'шт'),Ln('luk',1,'шт',{o:1}),Ln('mayonez',150,'г'),Ln('syr_tv',100,'г',{o:1})],
+  S:['Отварить картофель, морковь и яйца, остудить.','Размять сайру вилкой.','Выкладывать слоями: картофель, рыба, лук, морковь, белки, сыр, промазывая майонезом.','Сверху — тёртые желтки. Охладить 1 час.'],note:''},
+ {id:'vesenniy',v:1,n:'Салат из огурцов и помидоров со сметаной',t:'Салат',p:3,ta:10,tt:10,d:1,f:3,sh:2,eq:['миска'],
+  L:[Ln('ogurec',2,'шт',{h:'Основа салата',sg:2}),Ln('pomidor',3,'шт',{h:'Основа салата',sg:2}),Ln('smetana',100,'г',{h:'Заправка',sg:2,show:'Сметана ложкой в миску'}),Ln('ukrop',15,'г'),Ln('luk_zel',10,'г',{o:1}),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Нарезать огурцы и помидоры.','Посыпать зеленью, посолить.','Заправить сметаной перед подачей.'],note:''},
+ {id:'makarony_tush',v:1,n:'Макароны с тушёнкой',t:'Горячее',p:4,ta:15,tt:20,d:1,f:3,sh:2,eq:['кастрюля','сковорода'],
+  L:[Ln('makarony',400,'г'),Ln('tushenka',1,'банка',{h:'Мясо и соус блюда',sg:3,show:'Открытие банки, мясо на сковороде'}),Ln('luk',1,'шт'),Ln('morkov',1,'шт',{o:1}),Ln('tomat_pasta',30,'г',{o:1}),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Отварить макароны.','Обжарить лук и морковь, добавить тушёнку с жиром.','Прогреть 5 минут.','Смешать с макаронами.'],note:''},
+ {id:'grechka_tush',v:1,n:'Гречка с тушёнкой',t:'Горячее',p:4,ta:15,tt:30,d:1,f:3,sh:2,eq:['кастрюля','сковорода'],
+  L:[Ln('grechka',300,'г'),Ln('tushenka',1,'банка',{h:'Мясо блюда',sg:3}),Ln('luk',1,'шт'),Ln('morkov',1,'шт'),Ln('voda',0.6,'л'),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Промыть гречку, залить водой, варить 15 минут.','Обжарить лук и морковь.','Добавить тушёнку, прогреть.','Смешать с гречкой, дать постоять 5 минут.'],note:''},
+ {id:'borsch',v:1,n:'Борщ с тушёнкой',t:'Суп',p:6,ta:40,tt:80,d:2,f:3,sh:3,eq:['кастрюля','сковорода'],
+  L:[Ln('svekla',1,'шт',{h:'Цвет и вкус борща',sg:3}),Ln('kapusta',300,'г',{h:'Основа борща',sg:2}),Ln('tushenka',1,'банка',{h:'Мясная основа',sg:2}),Ln('kartofel',3,'шт'),Ln('morkov',1,'шт'),Ln('luk',1,'шт'),Ln('tomat_pasta',40,'г'),Ln('maslo_rast',30,'мл'),Ln('chesnok',2,'зуб.',{o:1}),Ln('smetana',100,'г',{o:1}),Ln('lavrovy',2,'шт',{o:1}),Ln('voda',2.5,'л'),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Сварить картофель 10 минут.','Обжарить лук, морковь, свёклу с томатной пастой.','Добавить капусту, затем зажарку и тушёнку.','Варить 15 минут, добавить чеснок и лавровый лист.','Подать со сметаной.'],note:''},
+ {id:'fasol_salat',v:1,n:'Салат с красной фасолью, колбасой и сухариками',t:'Салат',p:4,ta:15,tt:25,d:1,f:2,sh:2,eq:['духовка или сковорода','миска'],
+  L:[Ln('fasol',1,'банка',{h:'Основа салата',sg:3}),Ln('kolb_pk',150,'г',{h:'Копчёный вкус салата',sg:2,a:['kolb_var','vetch'],show:'Соломка колбасы'}),Ln('hleb_cher',3,'ломт.',{p:'подсушить кубиком'}),Ln('chesnok',1,'зуб.'),Ln('mayonez',80,'г'),Ln('kukuruza',0.5,'банка',{o:1})],
+  S:['Подсушить кубики хлеба 7 минут.','Слить жидкость с фасоли.','Нарезать колбасу соломкой.','Смешать с майонезом и чесноком, сухарики — перед подачей.'],note:''},
+ {id:'shproty_buter',v:1,n:'Бутерброды со шпротами',t:'Закуска',p:4,ta:15,tt:15,d:1,f:3,sh:3,eq:['сковорода'],
+  L:[Ln('shproty',1,'банка',{h:'Главное украшение бутерброда',sg:3,show:'Открытие банки, выкладка рыбок'}),Ln('hleb_cher',8,'ломт.',{a:['baton']}),Ln('ogurec',1,'шт'),Ln('chesnok',1,'зуб.'),Ln('mayonez',40,'г'),Ln('maslo_rast',20,'мл',{o:1}),Ln('ukrop',10,'г',{o:1})],
+  S:['Подсушить хлеб на сковороде.','Натереть чесноком, смазать майонезом.','Выложить ломтик огурца и шпроты.','Украсить укропом.'],note:''},
+ {id:'sup_kilka',v:1,n:'Суп из кильки в томате',t:'Суп',p:4,ta:15,tt:35,d:1,f:2,sh:2,eq:['кастрюля'],
+  L:[Ln('kilka_tom',1,'банка',{h:'Основа вкуса супа',sg:3}),Ln('kartofel',4,'шт'),Ln('morkov',1,'шт'),Ln('luk',1,'шт'),Ln('ris',50,'г',{o:1}),Ln('lavrovy',2,'шт',{o:1}),Ln('voda',1.5,'л'),Ln('ukrop',10,'г',{o:1}),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Сварить картофель, морковь и лук 15 минут.','Добавить рис по желанию.','Выложить кильку с соусом, варить 5 минут.','Добавить лавровый лист и зелень.'],note:''},
+ {id:'draniki',v:1,n:'Драники',t:'Горячее',p:3,ta:30,tt:40,d:2,f:3,sh:3,eq:['тёрка','сковорода'],
+  L:[Ln('kartofel',6,'шт',{h:'Основа драников',sg:3}),Ln('luk',1,'шт'),Ln('yaica',1,'шт'),Ln('muka',40,'г'),Ln('maslo_rast',60,'мл'),Ln('smetana',100,'г',{o:1,h:'Подача',sg:1}),Ln('sol',null,'по вкусу',{o:1})],
+  S:['Натереть картофель и лук, отжать.','Добавить яйцо, муку, соль.','Жарить по 3 минуты с каждой стороны.','Подать со сметаной.'],note:''}
+];
+
+const REJECT = ['Сложное блюдо','Продукт плохо виден','Неполный состав','Повтор в серии','Неудачная пробная готовка'];
+const STAGES = {idea:'Идея',review:'На согласовании',approved:'Утверждён',shot:'Снят',rejected:'Отклонён'};
+const RSTAT = {draft:'Черновик',editor:'Утверждён',tested:'Проверен готовкой'};
+
+/* Перевод в граммы: вес штуки / ломтика / зубчика, нетто банки, плотность жидкостей */
+const PIECE = { yaica:55, kartofel:150, morkov:100, luk:100, ogurec:120, ogur_sol:60, pomidor:120, perec_bolg:150, svekla:250,
+  chesnok:5, sosiski:45, lavash:90, baton:400, pechenie:10, lavrovy:0.2 };
+const SLICE = { baton:25, hleb_cher:30 };
+const JAR = { goroshek:400, kukuruza:340, fasol:400, tushenka:338, sayra:250, shproty:160, kilka_tom:240 };
+const DENS = { maslo_rast:0.92, moloko:1.03, kefir:1.03, ryazh:1.03, slivki:1.0, kvas:1.0 };
+const TSP = { soda:6 };
+function toGrams(ing, q, u) {
+  if (q == null) return null;
+  if (u === 'г') return { g: q, approx: false };
+  if (u === 'кг') return { g: q * 1000, approx: false };
+  if (u === 'мл') return { g: q * (DENS[ing] || 1), approx: !!DENS[ing] && DENS[ing] !== 1 };
+  if (u === 'л') return { g: q * 1000 * (DENS[ing] || 1), approx: !!DENS[ing] && DENS[ing] !== 1 };
+  if (u === 'банка' && JAR[ing]) return { g: q * JAR[ing], approx: false };
+  if (u === 'ломт.' && SLICE[ing]) return { g: q * SLICE[ing], approx: true };
+  if ((u === 'шт' || u === 'зуб.') && PIECE[ing] != null) return { g: q * PIECE[ing], approx: true };
+  if (u === 'ч. л.' && TSP[ing]) return { g: q * TSP[ing], approx: true };
+  return null;
+}
+
+/* ===== ПРИЛОЖЕНИЕ ===== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = s => ' ' + String(s || '').toLowerCase().replace(/ё/g, 'е').replace(/[«»"“”]/g, '').replace(/\s+/g, ' ').trim() + ' ';
+const lsGet = k => { try { return localStorage.getItem('svf_' + k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem('svf_' + k, v); } catch (e) {} };
+
+const ST = {
+  tab: lsGet('tab') || 'pick',
+  q: '', cat: 'Все', inclAdded: true, sku: 'L07',
+  dtype: 'Все', noOven: false, quick: false, cmp: [],
+  drawer: null, sel: {}, form: {}, confirmDel: false,
+  aQ: '', aCat: 'Все', aNeed: false, rQ: '', rType: 'Все',
+  imp: { text: '', rows: null }, showList: false, qOpen: false, qIdx: 0, qRes: [], cq: '',
+  recent: (() => { try { return JSON.parse(lsGet('recent') || '[]'); } catch (e) { return []; } })(),
+  open: [], modal: null,
+  basket: (() => { try { const b = JSON.parse(lsGet('basket') || '[]'); return Array.isArray(b) ? b.filter(x => x && x.rid && x.sku) : []; } catch (e) { return []; } })()
+};
+const COLS = ['cards', 'links', 'rstat', 'skuimp'];
+const DATA = { cards: {}, links: {}, rstat: {}, skuimp: {} };
+let DB = null, DL = null;
+
+function loadLocal() { COLS.forEach(c => { try { DATA[c] = JSON.parse(lsGet('d_' + c) || '{}') || {}; } catch (e) { DATA[c] = {}; } }); }
+function saveLocal(c) { lsSet('d_' + c, JSON.stringify(DATA[c])); }
+function dbErr(e) {
+  const c = e && e.code;
+  if (c === 'invalid_argument') toast('Нет прав на изменение. Нужен доступ «Участник».');
+  else if (c === 'quota_exceeded') toast('База заполнена. Удалите лишние записи.');
+  else toast('Не сохранилось. Повторите.');
+}
+async function put(col, id, obj) {
+  DATA[col] = Object.assign({}, DATA[col], { [id]: obj }); render();
+  if (DB) { try { await DB.collection(col).doc(id).set(obj); } catch (e) { dbErr(e); } } else saveLocal(col);
+}
+async function del(col, id) {
+  const o = Object.assign({}, DATA[col]); delete o[id]; DATA[col] = o; render();
+  if (DB) { try { await DB.collection(col).doc(id).delete(); } catch (e) { dbErr(e); } } else saveLocal(col);
+}
+
+/* ---------- Ассортимент и связи ---------- */
+function allSkus() { return SKU0.concat(Object.values(DATA.skuimp).map(s => Object.assign({ src: 'import' }, s))); }
+let _skuMap = null, _skuKey = '';
+function skuById(id) {
+  const key = Object.keys(DATA.skuimp).join(',');
+  if (!_skuMap || key !== _skuKey) { _skuMap = {}; allSkus().forEach(s => _skuMap[s.id] = s); _skuKey = key; }
+  return _skuMap[id];
+}
+function linksOf(id) {
+  const s = skuById(id); if (!s) return [];
+  const m = {};
+  (s.L || []).forEach(([ing, st, note]) => m[ing] = { ing, st, note: note || '' });
+  Object.values(DATA.links).filter(l => l.sku === id).forEach(l => { m[l.ing] = Object.assign({ ing: l.ing, note: '' }, m[l.ing], { st: l.st }); });
+  return Object.values(m);
+}
+const usable = st => st === 'auto' || st === 'ok';
+const skuVisible = s => ST.inclAdded || s.src !== 'added';
+const isOwn = s => s.src !== 'added';
+const ownSkus = () => allSkus().filter(isOwn);
+function ingIndex(all) {
+  const idx = {};
+  allSkus().forEach(s => { if (!all && !skuVisible(s)) return; linksOf(s.id).forEach(l => { if (l.st === 'no') return; (idx[l.ing] = idx[l.ing] || []).push({ id: s.id, st: l.st, src: s.src }); }); });
+  Object.values(idx).forEach(a => a.sort((x, y) => (x.src === 'list' ? 0 : 1) - (y.src === 'list' ? 0 : 1)));
+  return idx;
+}
+function setLink(sku, ing, st) {
+  const key = sku + '__' + ing;
+  const base = ((skuById(sku).L || []).find(l => l[0] === ing) || [])[1];
+  if (st === base) { if (DATA.links[key]) del('links', key); return; }
+  put('links', key, { sku, ing, st, at: new Date().toISOString() });
+}
+
+/* ---------- Подбор ---------- */
+const RANK = { ok: 0, sub: 1, check: 2, miss: 3 };
+const SLABEL = { ok: 'Состав есть', sub: 'Нужна замена', check: 'Проверить', miss: 'Не хватает' };
+function evalRecipe(r, heroId, IDX) {
+  IDX = IDX || ingIndex();
+  let heroIdx = -1, heroInfo = null;
+  if (heroId) {
+    const hl = linksOf(heroId).filter(l => l.st !== 'no');
+    for (let i = 0; i < r.L.length && heroIdx < 0; i++) {
+      const ln = r.L[i]; if (!ln.h) continue;
+      const pool = [ln.i].concat(ln.a || []);
+      let m = hl.find(l => pool.includes(l.ing)), via = 'main';
+      if (!m) { m = hl.find(l => (ln.ca || []).includes(l.ing)); via = 'ca'; }
+      if (m) { heroIdx = i; heroInfo = { link: m, via }; }
+    }
+    if (heroIdx < 0) return null;
+  }
+  const cand = ids => { const out = []; ids.forEach(x => (IDX[x] || []).forEach(c => { if (!out.find(o => o.id === c.id)) out.push(Object.assign({ ing: x }, c)); })); return out; };
+  const lines = r.L.map((ln, i) => {
+    if (ING[ln.i].base) return { st: 'base', skus: [] };
+    if (i === heroIdx) {
+      const why = heroInfo.link.st === 'need' ? 'Товар не подтверждён' : heroInfo.via === 'ca' ? 'Проверить на пробной готовке' : '';
+      return { st: why ? 'check' : 'ok', skus: [{ id: heroId, ing: heroInfo.link.ing, st: heroInfo.link.st }], hero: true, why };
+    }
+    const c = cand([ln.i].concat(ln.a || []));
+    const good = c.filter(x => usable(x.st));
+    if (good.length) return { st: 'ok', skus: good };
+    const cc = cand(ln.ca || []).filter(x => usable(x.st));
+    if (cc.length && !ln.o) return { st: 'check', skus: cc, why: 'Вариант: ' + ING[cc[0].ing].n.toLowerCase() };
+    const nd = c.filter(x => x.st === 'need');
+    if (nd.length && !ln.o) return { st: 'check', skus: nd, why: 'Товар не подтверждён' };
+    if (ln.o) return { st: 'opt', skus: [] };
+    const sc = cand(ln.s || []).filter(x => usable(x.st));
+    if (sc.length) return { st: 'sub', skus: sc, why: 'Замена: ' + ING[sc[0].ing].n.toLowerCase() };
+    return { st: 'miss', skus: [] };
+  });
+  const has = s => lines.some(l => l.st === s);
+  const status = has('miss') ? 'miss' : has('check') ? 'check' : has('sub') ? 'sub' : 'ok';
+  const hl = heroIdx >= 0 ? r.L[heroIdx] : null;
+  const sg = hl ? (hl.sg || 1) : 0;
+  const score = r.f * 3 + (4 - r.d) * 2 + sg * 3 + r.sh * 2;
+  const names = s => lines.map((l, i) => l.st === s ? ING[r.L[i].i].n.toLowerCase() : null).filter(Boolean);
+  return { r, heroIdx, hl, heroIng: heroInfo ? heroInfo.link.ing : null, lines, status, sg, score, miss: names('miss'), check: names('check'), sub: names('sub') };
+}
+function variantsFor(skuId) {
+  const IDX = ingIndex();
+  return RECIPES.map(r => evalRecipe(r, skuId, IDX)).filter(Boolean).sort((a, b) => RANK[a.status] - RANK[b.status] || b.score - a.score);
+}
+const rstatus = rid => (DATA.rstat[rid] && DATA.rstat[rid].st) || 'draft';
+
+/* ---------- Серия ---------- */
+const cardsArr = () => Object.values(DATA.cards).sort((a, b) => a.num - b.num);
+function nextNum() { const used = new Set(cardsArr().map(c => c.num)); let n = 1; while (used.has(n)) n++; return n; }
+function cardCheck(c) {
+  const r = RECIPES.find(x => x.id === c.rid), out = { reasons: [], ev: null };
+  if (!r) { out.reasons.push('Рецепт удалён из каталога'); return out; }
+  if (r.v !== c.rv) out.reasons.push('Рецепт обновлён: v' + c.rv + ' → v' + r.v);
+  if (!skuById(c.sku)) { out.reasons.push('Товара нет в ассортименте'); return out; }
+  const ev = evalRecipe(r, c.sku, ingIndex(true)); out.ev = ev;
+  if (!ev) { out.reasons.push('Товар больше не подходит к рецепту'); return out; }
+  if (ev.status !== c.st) out.reasons.push('Состав: было «' + SLABEL[c.st] + '», стало «' + SLABEL[ev.status] + '»');
+  Object.entries(c.sel || {}).forEach(([i, sid]) => { const ln = ev.lines[i]; if (ln && sid && !ln.skus.find(s => s.id === sid)) out.reasons.push('Не подходит: ' + ((skuById(sid) || {}).n || sid)); });
+  return out;
+}
+
+
+/* ===== ОТОБРАЖЕНИЕ ===== */
+const IC = {
+  search:'<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>', minus:'<path d="M5 12h14"/>', check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  clock:'<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>', back:'<path d="M15 6l-6 6 6 6"/>',
+  copy:'<rect x="8" y="8" width="11" height="11" rx="3"/><path d="M5 15V7a2 2 0 0 1 2-2h8"/>',
+  basket:'<path d="M4 9h16l-1.5 9.2a2 2 0 0 1-2 1.8h-9a2 2 0 0 1-2-1.8z"/><path d="M8.5 9l3.5-5 3.5 5"/>',
+  list:'<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',
+  trash:'<path d="M5 7h14M10 7V5h4v2M7 7l1 12h8l1-12"/>',
+  'Салат':'<path d="M5 19c9 0 14-6 14-14C10 5 5 10 5 19z"/><path d="M5 19l8-8"/>',
+  'Суп':'<path d="M3.5 11h17a8.5 8.5 0 0 1-17 0z"/><path d="M9 7.5c0-1 1-1.5 0-3M13 7.5c0-1 1-1.5 0-3"/>',
+  'Горячее':'<path d="M12 3c1 4 5 5.5 5 10a5 5 0 0 1-10 0c0-2.5 1.5-4 2-5.5 1 1.5 2 2 3 2 0-2-1-4.5 0-6.5z"/>',
+  'Закуска':'<path d="M3 11l9-5 9 5z"/><path d="M4 14h16M5 17h14v2H5z"/>',
+  'Завтрак':'<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/>',
+  'Десерт':'<path d="M6 11h12l-2 9H8z"/><path d="M7 11a5 5 0 0 1 10 0"/>',
+  'Напиток':'<path d="M6 8h11v6a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M17 10h1.5a2 2 0 0 1 0 4H17"/>'
+};
+const ico = (k, cls) => `<svg class="ic${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" aria-hidden="true">${IC[k] || IC.list}</svg>`;
+const fmtT = m => m >= 60 ? (Math.floor(m / 60) + ' ч' + (m % 60 ? ' ' + (m % 60) + ' мин' : '')) : m + ' мин';
+function plural(n, a, b, c) { const m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : m >= 2 && m <= 4 && (h < 12 || h > 14) ? b : c; }
+const roundG = g => g >= 100 ? Math.round(g / 5) * 5 : g >= 10 ? Math.round(g) : Math.round(g * 10) / 10;
+const fmtG = (g, approx) => (approx ? '≈ ' : '') + String(roundG(g)).replace('.', ',') + ' г';
+const inBasket = (rid, sku) => ST.basket.some(b => b.rid === rid && b.sku === sku);
+
+/* Строки рецепта с конкретными товарами и граммами */
+function recipeLines(r, heroSku, IDX) {
+  const v = evalRecipe(r, heroSku, IDX);
+  if (!v) return null;
+  return r.L.map((ln, i) => {
+    const L = v.lines[i];
+    const ingId = L.hero && v.heroIng ? v.heroIng : ln.i;
+    const sku = L.skus && L.skus.length ? L.skus[0].id : null;
+    const gr = ING[ln.i].base ? null : toGrams(ln.i, ln.q, ln.u);
+    return { ln, L, ing: ING[ingId], ingId, sku, gr, hero: !!L.hero, base: !!ING[ln.i].base, opt: !!ln.o };
+  });
+}
+const qtyText = x => x.gr ? fmtG(x.gr.g, x.gr.approx) : (x.ln.q == null ? x.ln.u : String(x.ln.q).replace('.', ',') + ' ' + x.ln.u);
+
+function render() {
+  const a = document.activeElement, aid = a && a.id, pos = a && a.selectionStart;
+  const n = ST.basket.length;
+  document.querySelectorAll('.bk-n').forEach(e => e.textContent = n ? n : '');
+  document.querySelectorAll('.bk-btn').forEach(e => e.classList.toggle('has', n > 0));
+  $('#main').innerHTML = renderPage();
+  renderModal();
+  if (aid) { const el = document.getElementById(aid); if (el) { el.focus(); try { if (pos != null) el.setSelectionRange(pos, pos); } catch (e) {} } }
+}
+
+function skuMatches(nq) {
+  return ownSkus().filter(s => (!nq || norm(s.n + ' ' + s.b + ' ' + s.cat + ' ' + linksOf(s.id).map(l => ING[l.ing] ? ING[l.ing].n : '').join(' ')).includes(nq)));
+}
+function renderPage() {
+  const nq = norm(ST.q).trim(), IDX = ingIndex();
+  const dc = id => RECIPES.reduce((k, r) => k + (evalRecipe(r, id, IDX) ? 1 : 0), 0);
+  let drop = '';
+  if (ST.qOpen && nq) {
+    const res = skuMatches(nq).slice(0, 8);
+    ST.qRes = res.map(s => s.id);
+    drop = `<div class="drop" role="listbox" id="qlist">${res.length ? res.map((s, i) => `<button class="drop-i${i === ST.qIdx ? ' hl' : ''}" role="option" data-act="pick-sku" data-id="${s.id}"><span class="sku-t"><span class="sku-n">${esc(s.n)}</span><span class="sku-m">${esc(s.cat)}</span></span><span class="sku-c">${dc(s.id)}</span></button>`).join('') : '<p class="empty">Ничего не найдено</p>'}</div>`;
+  } else ST.qRes = [];
+  const cats = [...new Set(ownSkus().map(s => s.cat))];
+  const shelves = cats.map(c => `<div class="shelf"><h3>${esc(c)}</h3><div class="pgrid">${ownSkus().filter(s => s.cat === c).map(s => {
+    const n = dc(s.id);
+    return `<button class="pcard${ST.sku === s.id ? ' on' : ''}" data-act="pick-sku" data-id="${s.id}" aria-pressed="${ST.sku === s.id}"><span class="pc-n">${esc(s.n)}</span><span class="pc-c">${n} ${plural(n, 'рецепт', 'рецепта', 'рецептов')}</span></button>`;
+  }).join('')}</div></div>`).join('');
+  return `<div class="searchbox">
+      <label class="search big">${ico('search')}<input id="q" type="search" placeholder="Найти товар: колбаса, творог, пельмени…" value="${esc(ST.q)}" data-in="q" autocomplete="off" aria-label="Поиск товара" aria-controls="qlist" aria-expanded="${!!drop}">${ST.q ? `<button class="qx" data-act="q-clear" aria-label="Очистить">${ico('x')}</button>` : ''}</label>
+      ${drop}
+    </div>
+    <section class="shelves">${shelves}</section>
+    <section id="recipes" class="recipes">${renderRecipes(IDX)}</section>`;
+}
+function renderRecipes(IDX) {
+  const s = skuById(ST.sku);
+  if (!s) return `<div class="card empty">Выберите товар</div>`;
+  const vs = variantsFor(s.id);
+  const types = ['Все'].concat([...new Set(vs.map(v => v.r.t))]);
+  const list = vs.filter(v => ST.dtype === 'Все' || v.r.t === ST.dtype);
+  return `<div class="rhead"><div><span class="rh-k">Рецепты с товаром</span><h2>${esc(s.n)}</h2></div><span class="rh-n">${vs.length}</span></div>
+    ${types.length > 2 ? `<div class="chips">${types.map(t => `<button class="chip${ST.dtype === t ? ' on' : ''}" data-act="dtype" data-v="${t}">${t}</button>`).join('')}</div>` : ''}
+    <div class="rgrid">${list.map(v => recipeCard(v.r, s.id, IDX)).join('') || '<div class="card empty">Нет рецептов</div>'}</div>`;
+}
+function recipeCard(r, skuId, IDX) {
+  const lines = recipeLines(r, skuId, IDX);
+  const open = ST.open.includes(r.id), saved = inBasket(r.id, skuId);
+  const req = lines.filter(x => !x.base && !x.opt && x.ln.q != null);
+  const chips = req.map(x => `<span class="g${x.hero ? ' hero' : ''}">${esc(x.ing.n)} <b>${qtyText(x)}</b></span>`).join('');
+  const full = open ? `<div class="rc-full">
+      <h4>Состав на ${r.p} ${plural(r.p, 'порцию', 'порции', 'порций')}</h4>
+      <ul class="ings">${lines.filter(x => !x.base).map(x => `<li class="${x.hero ? 'hero' : ''}"><span class="i-n">${esc(x.ing.n)}<small>${x.opt ? 'по желанию · ' : ''}${x.sku ? esc(skuById(x.sku).n) : '<span class="bad">нет в ассортименте</span>'}</small></span><span class="i-q">${qtyText(x)}</span></li>`).join('')}</ul>
+      <h4>Приготовление</h4>
+      <ol class="steps">${r.S.map(t => `<li>${esc(t)}</li>`).join('')}</ol>
+      ${r.note ? `<p class="note">${esc(r.note)}</p>` : ''}
+    </div>` : '';
+  return `<article class="rc${open ? ' open' : ''}${saved ? ' saved' : ''}">
+    <div class="rc-top"><span class="rc-ic">${ico(r.t)}</span><div class="rc-t"><h4>${esc(r.n)}</h4><span class="rc-m">${ico('clock')}${fmtT(r.tt)} · ${r.p} ${plural(r.p, 'порция', 'порции', 'порций')} · ${r.t}</span></div></div>
+    <div class="gchips">${chips}</div>
+    ${open ? '' : `<p class="rc-s">${esc(r.S.join(' '))}</p>`}
+    ${full}
+    <div class="rc-act">
+      <button class="rbtn" data-act="toggle-open" data-id="${r.id}" aria-expanded="${open}">${ico(open ? 'minus' : 'plus')}<span>${open ? 'Свернуть' : 'Состав и готовка'}</span></button>
+      <button class="rbtn save${saved ? ' on' : ''}" data-act="toggle-basket" data-id="${r.id}" data-sku="${skuId}" aria-pressed="${saved}">${ico('check')}<span>${saved ? 'На съёмке' : 'На съёмку'}</span></button>
+    </div>
+  </article>`;
+}
+
+/* ---------- Корзина и список покупок ---------- */
+function basketItems() { return ST.basket.map(b => ({ b, r: RECIPES.find(x => x.id === b.rid), s: skuById(b.sku) })).filter(x => x.r && x.s); }
+function shoppingList() {
+  const FULL = ingIndex(true), m = {}, taste = new Set();
+  basketItems().forEach(({ r, s }) => {
+    const lines = recipeLines(r, s.id, FULL); if (!lines) return;
+    lines.forEach(x => {
+      if (x.base || x.opt) return;
+      if (x.ln.q == null) { taste.add(x.ing.n.toLowerCase()); return; }
+      const key = x.sku || ('ing:' + x.ingId);
+      const e = m[key] = m[key] || { name: x.sku && skuById(x.sku).src !== 'added' ? skuById(x.sku).n : x.ing.n, ing: x.ing.n, g: 0, approx: false, other: [] };
+      if (x.gr) { e.g += x.gr.g; e.approx = e.approx || x.gr.approx; } else e.other.push(String(x.ln.q).replace('.', ',') + ' ' + x.ln.u);
+    });
+  });
+  const rows = Object.values(m).sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+  return { rows, taste: [...taste].filter(t => !rows.some(r => r.ing.toLowerCase() === t)) };
+}
+const rowQty = e => [e.g ? fmtG(e.g, e.approx) : '', ...e.other].filter(Boolean).join(' + ');
+function shoppingText() {
+  const d = shoppingList();
+  return 'Продукты для покупки\n\n' + d.rows.map(e => e.name + ' — ' + rowQty(e)).join('\n') + (d.taste.length ? '\n\nПо вкусу: ' + d.taste.join(', ') : '');
+}
+function renderModal() {
+  const m = ST.modal, box = $('#drawer'), back = $('#back');
+  box.hidden = back.hidden = !m;
+  document.body.classList.toggle('lock', !!m);
+  if (!m) return;
+  box.className = 'drawer' + (m === 'list' ? ' center' : '');
+  box.innerHTML = m === 'list' ? listView() : basketView();
+}
+function basketView() {
+  const items = basketItems();
+  return `<div class="grab" aria-hidden="true"></div><div class="dr-head"><button class="iconbtn" data-act="close" aria-label="Закрыть">${ico('back')}</button><h2>Корзина рецептов</h2><span class="rh-n">${items.length}</span></div>
+  <div class="dr-body">
+    ${items.length ? `<div class="blist">${items.map(({ b, r, s }) => `<div class="bitem"><span class="rc-ic">${ico(r.t)}</span><div class="bi-t"><b>${esc(r.n)}</b><span>${esc(s.n)}</span><span class="rc-m">${fmtT(r.tt)} · ${r.p} ${plural(r.p, 'порция', 'порции', 'порций')}</span></div><button class="iconbtn sm" data-act="bk-remove" data-id="${b.rid}" data-sku="${b.sku}" aria-label="Убрать из корзины">${ico('x')}</button></div>`).join('')}</div>
+      <div class="bfoot"><button class="btn pri wide" data-act="show-list">${ico('list')}Импорт продуктов</button><button class="lnk mute" data-act="bk-clear">${ico('trash')}Очистить корзину</button></div>`
+    : `<div class="empty big">${ico('basket', 'ic-big')}<p>Корзина пуста</p><span class="mute">Отмечайте рецепты кнопкой «На съёмку»</span></div>`}
+  </div>`;
+}
+function listView() {
+  const d = shoppingList(), total = d.rows.reduce((a, e) => a + e.g, 0);
+  return `<div class="dr-head"><button class="iconbtn" data-act="back-basket" aria-label="Назад">${ico('back')}</button><h2>Продукты для покупки</h2></div>
+  <div class="dr-body">
+    <p class="mute sm">${ST.basket.length} ${plural(ST.basket.length, 'рецепт', 'рецепта', 'рецептов')} · ${d.rows.length} ${plural(d.rows.length, 'продукт', 'продукта', 'продуктов')}</p>
+    <div class="shop">${d.rows.map(e => `<div class="sh-r"><span class="sh-n">${esc(e.name)}</span><span class="sh-q">${rowQty(e)}</span></div>`).join('')}
+    <div class="sh-r total"><span class="sh-n">Итого</span><span class="sh-q">${fmtG(total, d.rows.some(e => e.approx))}</span></div></div>
+    ${d.taste.length ? `<p class="mute sm">По вкусу: ${esc(d.taste.join(', '))}</p>` : ''}
+    <div class="actions"><button class="btn" data-act="copy-list">${ico('copy')}Скопировать</button><button class="btn" data-act="close">Закрыть</button></div>
+  </div>`;
+}
+
+/* ===== ДЕЙСТВИЯ ===== */
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2400); }
+function copyText(text) {
+  const fb = () => { const ta = $('#copybuf'); ta.hidden = false; ta.value = text; ta.select(); toast('Текст выделен — скопируйте'); setTimeout(() => ta.hidden = true, 8000); };
+  try { navigator.clipboard.writeText(text).then(() => toast('Скопировано'), fb); } catch (e) { fb(); }
+}
+function saveBasket() { lsSet('basket', JSON.stringify(ST.basket)); }
+function pickSku(id) {
+  ST.sku = id; ST.dtype = 'Все'; ST.open = []; ST.q = ''; ST.qOpen = false; ST.qIdx = 0;
+  if (document.activeElement) document.activeElement.blur();
+  render(); revealSelected();
+  const el = $('#recipes'); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]');
+  if (ST.qOpen && !e.target.closest('.searchbox')) { ST.qOpen = false; if (!b) render(); }
+  if (!b || b.disabled) return;
+  const a = b.dataset.act, id = b.dataset.id, v = b.dataset.v;
+  switch (a) {
+    case 'pick-sku': pickSku(id); break;
+    case 'q-clear': ST.q = ''; ST.qOpen = false; render(); $('#q').focus(); break;
+    case 'dtype': ST.dtype = v; render(); break;
+    case 'toggle-open': { const i = ST.open.indexOf(id); i >= 0 ? ST.open.splice(i, 1) : ST.open.push(id); render(); break; }
+    case 'toggle-basket': {
+      const sku = b.dataset.sku, i = ST.basket.findIndex(x => x.rid === id && x.sku === sku);
+      if (i >= 0) ST.basket.splice(i, 1); else ST.basket.push({ rid: id, sku, at: Date.now() });
+      saveBasket(); render(); if (i < 0) toast('Рецепт добавлен на съёмку'); break;
+    }
+    case 'open-basket': ST.modal = 'basket'; render(); $('#drawer').scrollTop = 0; break;
+    case 'bk-remove': ST.basket = ST.basket.filter(x => !(x.rid === id && x.sku === b.dataset.sku)); saveBasket(); render(); break;
+    case 'bk-clear': if (ST.confirmClear) { ST.basket = []; ST.confirmClear = false; saveBasket(); render(); } else { ST.confirmClear = true; b.innerHTML = 'Нажмите ещё раз, чтобы очистить'; setTimeout(() => { ST.confirmClear = false; }, 3000); } break;
+    case 'show-list': ST.modal = 'list'; render(); $('#drawer').scrollTop = 0; break;
+    case 'back-basket': ST.modal = 'basket'; render(); break;
+    case 'copy-list': copyText(shoppingText()); break;
+    case 'close': ST.modal = null; render(); break;
+  }
+});
+document.addEventListener('focusin', e => { if (e.target.id === 'q' && ST.q && !ST.qOpen) { ST.qOpen = true; render(); } });
+document.addEventListener('keydown', e => {
+  if (e.target.id === 'q') {
+    const n = (ST.qRes || []).length;
+    if (e.key === 'ArrowDown' && n) { e.preventDefault(); ST.qOpen = true; ST.qIdx = Math.min(n - 1, (ST.qIdx || 0) + 1); render(); return; }
+    if (e.key === 'ArrowUp' && n) { e.preventDefault(); ST.qIdx = Math.max(0, (ST.qIdx || 0) - 1); render(); return; }
+    if (e.key === 'Enter' && n) { e.preventDefault(); pickSku(ST.qRes[ST.qIdx || 0]); return; }
+    if (e.key === 'Escape' && ST.qOpen) { ST.qOpen = false; render(); return; }
+  }
+  if (e.key === 'Escape' && ST.modal) { ST.modal = null; render(); }
+});
+let inT;
+document.addEventListener('input', e => {
+  const t = e.target;
+  if (t.dataset.in) { ST[t.dataset.in] = t.value; if (t.id === 'q') { ST.qOpen = true; ST.qIdx = 0; } clearTimeout(inT); inT = setTimeout(render, 120); }
+});
+
+function revealSelected() {
+  const el = document.querySelector('.pcard.on'); if (!el) return;
+  const row = el.parentElement; if (row.scrollWidth <= row.clientWidth) return;
+  row.scrollLeft = Math.max(0, el.offsetLeft - row.offsetLeft - 16);
+}
+/* ---------- Запуск ---------- */
+render(); revealSelected();
+
+</script>
+</body>
+</html>
